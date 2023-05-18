@@ -17,6 +17,7 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
+  maxPoolSize: 10,
 });
 
 async function run() {
@@ -32,9 +33,10 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/toys", (req, res) => {
+    app.post("/toys", async (req, res) => {
       const toys = req.body;
-      console.log(toys);
+      const result = await carToysCollection.insertOne(toys);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
