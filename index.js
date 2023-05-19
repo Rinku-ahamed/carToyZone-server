@@ -73,6 +73,15 @@ async function run() {
       const result = await carToysCollection.findOne(query);
       res.send(result);
     });
+
+    app.get("/searchToy", async (req, res) => {
+      const searchTxt = req.query.search;
+      const query = { name: searchTxt };
+      const result = await carToysCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Add toys function here
     app.post("/toys", async (req, res) => {
       const toys = req.body;
       const result = await carToysCollection.insertOne(toys);
