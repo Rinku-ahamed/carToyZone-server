@@ -17,13 +17,20 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
   maxPoolSize: 10,
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    client.connect();
+    client.connect((error) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+    });
 
     const carToysCollection = client.db("carToys").collection("toys");
 
@@ -34,11 +41,27 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/allToys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await carToysCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Get data for my toys by email
     app.get("/myToys", async (req, res) => {
       let query = {};
       if (req.query?.email) {
         query = { sellerEmail: req.query.email };
       }
+      const result = await carToysCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Category data get here
+    app.get("/toys/:category", async (req, res) => {
+      const category = req.params.category;
+      let query = { subCategory: category };
       const result = await carToysCollection.find(query).toArray();
       res.send(result);
     });
