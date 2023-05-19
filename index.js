@@ -28,8 +28,18 @@ async function run() {
     const carToysCollection = client.db("carToys").collection("toys");
 
     app.get("/toys", async (req, res) => {
-      const cursor = carToysCollection.find();
+      const limit = parseInt(req.query.limit);
+      const cursor = carToysCollection.find().limit(limit);
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/myToys", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { sellerEmail: req.query.email };
+      }
+      const result = await carToysCollection.find(query).toArray();
       res.send(result);
     });
 
