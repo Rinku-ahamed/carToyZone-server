@@ -74,11 +74,33 @@ async function run() {
       res.send(result);
     });
 
+    // Show data by search their name
     app.get("/searchToy", async (req, res) => {
       const searchTxt = req.query.search;
       const query = { name: searchTxt };
       const result = await carToysCollection.find(query).toArray();
       res.send(result);
+    });
+
+    // Filter data by ascending and descending
+
+    app.get("/filterToys", async (req, res) => {
+      const text = req.query.text;
+      console.log(text);
+      const email = req.query.email;
+      if (text === "ascending") {
+        const result = await carToysCollection
+          .find({ sellerEmail: email })
+          .sort({ price: 1 })
+          .toArray();
+        res.send(result);
+      } else if (text === "descending") {
+        const result = await carToysCollection
+          .find({ sellerEmail: email })
+          .sort({ price: -1 })
+          .toArray();
+        res.send(result);
+      }
     });
 
     // Add toys function here
